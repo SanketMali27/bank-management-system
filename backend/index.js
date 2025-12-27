@@ -1,18 +1,18 @@
-const express = require("express");
+import express from "express";
+import testRoutes from "./routes/testRoutes.js";
 
 const app = express();
 
-// middleware
 app.use(express.json());
 
-// test route
+// 👇 THIS LINE IS CRITICAL
 app.get("/", (req, res) => {
-    res.send("Bank Management Backend Running");
+    res.send("Root working");
 });
 
-// start server
+app.use("/api", testRoutes);
+
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
