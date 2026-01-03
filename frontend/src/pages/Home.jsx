@@ -1,29 +1,59 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function Home() {
+function Home({ user, setUser }) {
+    const [showMenu, setShowMenu] = useState(true);
+    const navigate = useNavigate();
     return (
         <div className="min-h-screen bg-gray-100">
             {/* NAVBAR */}
-            <nav className="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+            <nav className="bg-white shadow-sm px-8 py-4 flex justify-between items-center relative z-50">
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-blue-600"></div>
                     <h1 className="text-xl font-bold text-gray-800">MyBank</h1>
                 </div>
 
-                <div className="hidden md:flex gap-6 text-gray-600 font-medium">
-                    <a href="#">Bank</a>
-                    <a href="#">Borrow</a>
-                    <a href="#">Invest</a>
-                    <a href="#">Protect</a>
-                    <a href="#">About</a>
-                </div>
+                {user ? (
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowMenu(!showMenu)}
+                            className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold"
+                        >
+                            {user.fullName.charAt(0)}
+                        </button>
 
-                <Link
-                    to="/create-account"
-                    className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition"
-                >
-                    Become a Member
-                </Link>
+                        {showMenu && (
+                            <div className="absolute right-0 mt-2 bg-white shadow rounded w-40 z-50">
+                                <button
+                                    onClick={() => navigate(`/account/${user.accountNumber}`)}
+                                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                >
+                                    Account Details
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        localStorage.removeItem("user");
+                                        setUser(null);
+                                        setShowMenu(false);
+                                        navigate("/");
+                                    }}
+                                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <Link
+                        to="/login"
+                        className="bg-green-600 text-white px-5 py-2 rounded-full"
+                    >
+                        Become a Member
+                    </Link>
+                )}
             </nav>
 
             {/* HERO SECTION */}

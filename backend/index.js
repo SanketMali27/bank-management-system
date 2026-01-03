@@ -13,10 +13,18 @@ app.use(
 );
 
 app.use(express.json());
-
 dotenv.config();
 connectDB();
 // 👇 THIS LINE IS CRITICAL
+app.use((req, res, next) => {
+    console.log("REQUEST:", req.method, req.url);
+    next();
+});
+app.use((req, res, next) => {
+    console.log("HIT:", req.method, req.url);
+    next();
+});
+
 app.get("/", (req, res) => {
     res.send("Root working");
 });

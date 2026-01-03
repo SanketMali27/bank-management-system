@@ -1,5 +1,5 @@
 import express from "express";
-import { createAccount, getAccountByNumber } from "../controllers/AccountController.js";
+import { createAccount, getAccountByNumber, loginAccount } from "../controllers/AccountController.js";
 
 
 const router = express.Router();
@@ -7,6 +7,8 @@ const router = express.Router();
 router.get("/test", (req, res) => {
     res.send("Account route working");
 });
+
+router.post("/account/login", loginAccount);
 
 router.post("/account/create", createAccount);
 

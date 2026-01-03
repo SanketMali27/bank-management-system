@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-function AccountDetails() {
-    const { accountNumber } = useParams();
+function AccountDetails({ user }) {
+    const { accountNumber } = user ? { accountNumber: user.accountNumber } : useParams();
     const [account, setAccount] = useState(null);
     const [error, setError] = useState("");
+
+    if (!user) {
+        return (
+            <p className="text-center mt-20 text-red-600">
+                Please login to view account details
+            </p>
+        );
+    }
 
     useEffect(() => {
         const fetchAccount = async () => {

@@ -48,6 +48,40 @@ export const createAccount = async (req, res) => {
     }
 };
 
+export const loginAccount = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and account number are required",
+            });
+        }
+
+        const account = await Account.findOne({ email });
+        console.log(account);
+        if (!account) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid login details",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Login successful",
+            account,
+        });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+        });
+    }
+};
+
 
 
 export const getAccountByNumber = async (req, res) => {
