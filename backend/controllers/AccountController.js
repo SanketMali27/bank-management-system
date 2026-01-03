@@ -47,3 +47,31 @@ export const createAccount = async (req, res) => {
         });
     }
 };
+
+
+
+export const getAccountByNumber = async (req, res) => {
+    try {
+        const { accountNumber } = req.params;
+
+        const account = await Account.findOne({ accountNumber });
+
+        if (!account) {
+            return res.status(404).json({
+                success: false,
+                message: "Account not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            account,
+        });
+    } catch (error) {
+        console.error("Error fetching account:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+        });
+    }
+};

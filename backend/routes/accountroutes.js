@@ -1,5 +1,6 @@
 import express from "express";
-import { createAccount } from "../controllers/AccountController.js";
+import { createAccount, getAccountByNumber } from "../controllers/AccountController.js";
+
 
 const router = express.Router();
 
@@ -8,4 +9,7 @@ router.get("/test", (req, res) => {
 });
 
 router.post("/account/create", createAccount);
+
+router.get("/account/:accountNumber", getAccountByNumber);
+
 export default router;
