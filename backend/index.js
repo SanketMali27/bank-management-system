@@ -2,8 +2,15 @@ import express from "express";
 import accountroutes from "./routes/accountroutes.js";
 import connectDB from "./config/db.js";
 import dotenv from "dotenv";
-
+import cors from "cors";
 const app = express();
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true,
+    })
+);
 
 app.use(express.json());
 

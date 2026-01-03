@@ -2,11 +2,17 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URL);
-        console.log("Mongodb connected sucessfully");
+        const uri = process.env.MONGODB_URL;
+        if (!uri) {
+            console.warn("MONGODB_URL not set. Skipping DB connection in development.");
+            return;
+        }
+
+        await mongoose.connect(uri);
+        console.log("Mongodb connected successfully");
     } catch (err) {
-        console.error("mongodb connection Failed", err.message);
-        process.exit(1);
+        console.error("mongodb connection failed:", err.message);
+        console.error("Continuing without DB connection. Some features may not work.");
     }
 };
 export default connectDB;
