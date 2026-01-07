@@ -1,5 +1,5 @@
 import Account from "../models/Accounts.js";
-
+import jwt from "jsonwebtoken";
 export const createAccount = async (req, res) => {
     try {
         const {
@@ -67,11 +67,16 @@ export const loginAccount = async (req, res) => {
                 message: "Invalid login details",
             });
         }
-
+        const token = jwt.sign(
+            { id: account._id },          // payload
+            process.env.JWT_SECRET,       // secret
+            { expiresIn: process.env.JWT_EXPIRE }
+        );
+        console.log("Generated JWT Token:", token);
         res.status(200).json({
             success: true,
             message: "Login successful",
-            account,
+            account, token
         });
     } catch (error) {
         console.error("Login error:", error);

@@ -3,7 +3,25 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Home({ user, setUser }) {
-    const [showMenu, setShowMenu] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const handleLogout = () => {
+        // 1️⃣ Clear session
+        console.log("Logging out user:", user);
+        alert("You have been logged out.");
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        // 2️⃣ Reset user state
+        setUser(null);
+
+        // 3️⃣ Close sidebar
+        setIsSidebarOpen(false);
+
+        // 4️⃣ Redirect to home
+        navigate("/");
+    };
+
+
+
     const navigate = useNavigate();
     return (
         <div className="min-h-screen bg-gray-100">
@@ -17,41 +35,87 @@ function Home({ user, setUser }) {
                 {user ? (
                     <div className="relative">
                         <button
-                            onClick={() => setShowMenu(!showMenu)}
+                            onClick={() => setIsSidebarOpen(true)}
                             className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold"
                         >
                             {user.fullName.charAt(0)}
                         </button>
+                        {/* SIDEBAR OVERLAY */}
+                        {isSidebarOpen && (
+                            <div
+                                className="fixed inset-0 bg-black/40 z-40"
+                                onClick={() => setIsSidebarOpen(false)}
+                            ></div>
+                        )}
 
-                        {showMenu && (
-                            <div className="absolute right-0 mt-2 bg-white shadow rounded w-40 z-50">
-                                <button
-                                    onClick={() => navigate(`/account/${user.accountNumber}`)}
-                                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                                >
-                                    Account Details
-                                </button>
+                        {/* SIDEBAR */}
+                        <div
+                            className={`fixed top-0 right-0 h-full w-72 bg-white shadow-lg z-50 transform transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "translate-x-full"
+                                }`}
+                        >
+                            {/* HEADER */}
+                            <div className="p-6 border-b flex justify-between items-center">
+                                <div>
+                                    <p className="font-bold text-lg">{user?.fullName}</p>
+                                    <p className="text-sm text-gray-500">
+                                        Account No: {user?.accountNumber}
+                                    </p>
+                                </div>
 
                                 <button
-                                    onClick={() => {
-                                        localStorage.removeItem("user");
-                                        setUser(null);
-                                        setShowMenu(false);
-                                        navigate("/");
-                                    }}
-                                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                                    onClick={() => setIsSidebarOpen(false)}
+                                    className="text-gray-500 text-xl"
                                 >
-                                    Logout
+                                    ✕
                                 </button>
                             </div>
-                        )}
+
+                            {/* MENU */}
+                            <div className="p-6 space-y-4">
+                                <button
+                                    onClick={() => {
+                                        navigate(`/account/${user.accountNumber}`);
+                                        setIsSidebarOpen(false);
+                                    }}
+                                    className="block w-full text-left px-4 py-2 rounded hover:bg-gray-100"
+                                >
+                                    🏦 Account Details
+                                </button>
+
+                                <button
+                                    className="block w-full text-left px-4 py-2 rounded hover:bg-gray-100"
+                                >
+                                    🔁 Transactions
+                                </button>
+
+                                <button
+                                    className="block w-full text-left px-4 py-2 rounded hover:bg-gray-100"
+                                >
+                                    📈 Investments
+                                </button>
+
+                                <button
+                                    className="block w-full text-left px-4 py-2 rounded hover:bg-gray-100"
+                                >
+                                    🏠 Loans
+                                </button>
+
+                                <button
+                                    onClick={handleLogout}
+                                    className="block w-full text-left px-4 py-2 rounded text-red-600 hover:bg-red-50"
+                                >
+                                    🚪 Logout
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 ) : (
                     <Link
                         to="/login"
                         className="bg-green-600 text-white px-5 py-2 rounded-full"
                     >
-                        Become a Member
+                        Become a Member/Login
                     </Link>
                 )}
             </nav>

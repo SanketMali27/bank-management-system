@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Login({ setUser, setshowMenu }) {
+function Login({ setUser }) {
     const [email, setEmail] = useState("");
     const [accountNumber, setAccountNumber] = useState("");
     const [error, setError] = useState("");
@@ -14,6 +14,7 @@ function Login({ setUser, setshowMenu }) {
             const res = await fetch("http://localhost:5000/api/account/login", {
                 method: "POST",
                 headers: {
+
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ email }),
@@ -24,10 +25,13 @@ function Login({ setUser, setshowMenu }) {
             if (data.success) {
 
                 localStorage.setItem("user", JSON.stringify(data.account));
+                localStorage.setItem("token", data.token);
 
+                print("Login successful");
+                print("User: " + data.account.fullName);
+                console.log("token: " + data.token);
                 // Update app state
                 setUser(data.account);
-                setshowMenu(false);
 
                 // Redirect to home page 
                 navigate("/");
@@ -71,6 +75,17 @@ function Login({ setUser, setshowMenu }) {
                 <button className="w-full bg-blue-600 text-white py-2 rounded">
                     Login
                 </button>
+                <div className="mt-4 text-center">
+                    <p>
+                        Don't have an account?{" "}
+                        <a
+                            href="/create-account"
+                            className="text-blue-600 underline"
+                        >
+                            Create one
+                        </a>
+                    </p>
+                </div>
             </form>
         </div>
     );

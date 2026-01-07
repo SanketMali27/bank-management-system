@@ -22,7 +22,7 @@ function App() {
       <Routes>
 
         <Route path="/create-account" element={<CreateAccount />} />
-        <Route path="/" element={<Home user={user} />} />
+        <Route path="/" element={<Home user={user} setUser={setUser} />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route
           path="/account/:accountNumber"
