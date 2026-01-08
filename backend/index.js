@@ -3,6 +3,9 @@ import accountroutes from "./routes/accountroutes.js";
 import connectDB from "./config/db.js";
 import dotenv from "dotenv";
 import cors from "cors";
+import transactionRoutes from "./routes/transactionRoutes.js";
+
+
 const app = express();
 app.use(
     cors({
@@ -30,7 +33,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", accountroutes);
-
+app.use("/api/transactions", transactionRoutes);
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

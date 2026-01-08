@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 function CreateAccount() {
     const navigate = useNavigate();
+    const [showPassword1, setShowPassword1] = useState(false);
+    const [showPassword2, setShowPassword2] = useState(false);
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
@@ -23,7 +25,10 @@ function CreateAccount() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        if (formData.password !== formData.confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
         const payload = {
             fullName: formData.fullName,
             email: formData.email,
@@ -117,16 +122,46 @@ function CreateAccount() {
                         required
                     />
                     {/* Password */}
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                    />
+                    <div className="relative">
+                        <input
+                            type={showPassword1 ? "text" : "password"}
+                            name="password"
+                            placeholder="Password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className="w-full border p-3 pr-10 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                        />
 
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword1(!showPassword1)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                            {showPassword1 ? "🙈" : "👁️"}
+                        </button>
+                    </div>
+
+                    {/*Conform Password */}
+                    <div className="relative">
+                        <input
+                            type={showPassword2 ? "text" : "password"}
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            className="w-full border p-3 pr-10 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                        />
+
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword2(!showPassword2)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                            {showPassword2 ? "🙈" : "👁️"}
+                        </button>
+                    </div>
 
                     {/* ADDRESS */}
                     <input
