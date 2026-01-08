@@ -1,23 +1,41 @@
 import Account from "../models/Accounts.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 export const createAccount = async (req, res) => {
     try {
         const {
             fullName,
             email,
             phone,
+            password,
             address,
             balance
         } = req.body;
 
+
         // validation
-        if (!fullName || !email || !phone || !address) {
+        if (!fullName || !email || !phone || !address || !password) {
             return res.status(400).json({
                 success: false,
                 message: "Please provide all required fields"
             });
         }
+        console.log(password);
+        if (password.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must be at least 6 characters"
+            });
+        }
+        const existingUser = await Account.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: "Account already exists with this email"
+            });
+        }
 
+        const HashedPassword = await bcrypt.hash(password, 10);
         // generate account number
         const accountNumber = "ACC" + Date.now();
 
@@ -26,12 +44,13 @@ export const createAccount = async (req, res) => {
             email,
             phone,
             address,
+            password: HashedPassword,
             accountNumber,     // ✅ FIXED
             balance: balance ?? 0
         });
 
         await account.save();
-
+        account.password = undefined;
         return res.status(201).json({
             success: true,
             message: "Account created successfully",
@@ -50,12 +69,12 @@ export const createAccount = async (req, res) => {
 
 export const loginAccount = async (req, res) => {
     try {
-        const { email } = req.body;
+        const { email, password } = req.body;
 
-        if (!email) {
+        if (!email || !password) {
             return res.status(400).json({
                 success: false,
-                message: "Email and account number are required",
+                message: "Email and password are required",
             });
         }
 
@@ -65,6 +84,13 @@ export const loginAccount = async (req, res) => {
             return res.status(401).json({
                 success: false,
                 message: "Invalid login details",
+            });
+        }
+        const ispasswordCorrect = await bcrypt.compare(password, account.password);
+        if (!ispasswordCorrect) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid Password"
             });
         }
         const token = jwt.sign(

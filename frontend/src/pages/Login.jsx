@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 function Login({ setUser }) {
     const [email, setEmail] = useState("");
-    const [accountNumber, setAccountNumber] = useState("");
+    const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
@@ -17,7 +17,7 @@ function Login({ setUser }) {
 
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email, password }),
             });
 
             const data = await res.json();
@@ -64,10 +64,10 @@ function Login({ setUser }) {
 
                 <input
                     type="text"
-                    placeholder="Account Number"
+                    placeholder="Password"
                     className="w-full border p-3 mb-4 rounded"
-                    value={accountNumber}
-                    onChange={(e) => setAccountNumber(e.target.value)}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                 />
 
                 {error && <p className="text-red-600 mb-3">{error}</p>}

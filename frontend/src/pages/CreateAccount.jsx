@@ -1,11 +1,13 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 function CreateAccount() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
         phone: "",
         street: "",
+        password: "",
         city: "",
         state: "",
         pincode: "",
@@ -26,6 +28,7 @@ function CreateAccount() {
             fullName: formData.fullName,
             email: formData.email,
             phone: formData.phone,
+            password: formData.password,
             address: {
                 street: formData.street,
                 city: formData.city,
@@ -52,6 +55,18 @@ function CreateAccount() {
             if (data.success) {
                 alert("Account created successfully!");
                 console.log("Created Account:", data.account);
+                setFormData({
+                    fullName: "",
+                    email: "",
+                    phone: "",
+                    street: "",
+                    password: "",
+                    city: "",
+                    state: "",
+                    pincode: "",
+                    balance: ""
+                });
+                navigate("/login");
             } else {
                 alert(data.message);
             }
@@ -101,6 +116,17 @@ function CreateAccount() {
                         className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
+                    {/* Password */}
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
+
 
                     {/* ADDRESS */}
                     <input
