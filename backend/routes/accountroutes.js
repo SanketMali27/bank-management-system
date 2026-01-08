@@ -1,6 +1,6 @@
 import express from "express";
 import { createAccount, getAccountByNumber, loginAccount } from "../controllers/AccountController.js";
-
+import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -12,6 +12,6 @@ router.post("/account/login", loginAccount);
 
 router.post("/account/create", createAccount);
 
-router.get("/account/:accountNumber", getAccountByNumber);
+router.get("/account/me", protect, getAccountByNumber);
 
 export default router;

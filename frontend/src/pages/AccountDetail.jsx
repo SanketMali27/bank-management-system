@@ -17,9 +17,26 @@ function AccountDetails({ user }) {
     useEffect(() => {
         const fetchAccount = async () => {
             try {
+                const token = localStorage.getItem("token");
+
                 const res = await fetch(
-                    `http://localhost:5000/api/account/${accountNumber}`
+                    "http://localhost:5000/api/account/me",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json",
+                        },
+                    }
                 );
+
+                // 🔴 Handle token expiry / unauthorized
+                if (res.status === 401) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    navigate("/login");
+                    return;
+                }
+
                 const data = await res.json();
 
                 if (data.success) {
@@ -33,7 +50,7 @@ function AccountDetails({ user }) {
         };
 
         fetchAccount();
-    }, [accountNumber]);
+    }, []); // ✅ no dependency needed
 
     if (error) {
         return <p className="text-red-600 text-center mt-10">{error}</p>;

@@ -91,9 +91,7 @@ export const loginAccount = async (req, res) => {
 
 export const getAccountByNumber = async (req, res) => {
     try {
-        const { accountNumber } = req.params;
-
-        const account = await Account.findOne({ accountNumber });
+        const account = await Account.findById(req.userId);
 
         if (!account) {
             return res.status(404).json({
@@ -107,7 +105,6 @@ export const getAccountByNumber = async (req, res) => {
             account,
         });
     } catch (error) {
-        console.error("Error fetching account:", error);
         res.status(500).json({
             success: false,
             message: "Server error",
