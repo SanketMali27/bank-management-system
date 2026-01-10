@@ -160,7 +160,7 @@ function ActionCard({ title, icon, color, onClick }) {
     );
 }
 
-export default ActionCard;
+export { ActionCard };
 
 function InfoCard({ title, desc, icon }) {
     return (

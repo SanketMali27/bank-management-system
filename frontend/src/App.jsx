@@ -26,6 +26,25 @@ function App() {
     }
   }, []);
 
+  const refreshUser = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const res = await fetch("http://localhost:5000/api/account/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      setUser(data.account);
+      localStorage.setItem("user", JSON.stringify(data.account));
+    }
+  };
+
+
 
   return (
     <BrowserRouter>
@@ -34,50 +53,57 @@ function App() {
         user={user}
         onProfileClick={() => setIsSidebarOpen(true)}
       />
-      <div className="flex">
 
-        {user && (
-          <Sidebar
-            user={user}
-            isOpen={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
-            onLogout={() => {
-              localStorage.removeItem("user");
-              localStorage.removeItem("token");
-              setUser(null);
-              setIsSidebarOpen(false);
-            }}
-          />
-        )}
 
-        <main className="flex-1 bg-gray-100 p-6">
-          <Routes>
-            <Route path="/" element={<Home user={user} />} />
-            <Route
-              path="/dashboard"
-              element={
-                user ? (
-                  <DashBoard user={user} />
-                ) : (
-                  <Login setUser={setUser} />
-                )
-              }
-            />
-            <Route
-              path="/transactions"
-              element={user ? <Transactions /> : <Login setUser={setUser} />}
-            />
-            <Route path="/login" element={<Login setUser={setUser} />} />
-            <Route path="/create-account" element={<CreateAccount />} />
-            <Route
-              path="/account/:accountNumber"
-              element={<AccountDetails user={user} />}
-            />
-          </Routes>
-          <Routes path="/transfer" element={<TransferMoney />} >
-          </Routes>
-        </main>
-      </div>
+      {user && (
+        <Sidebar
+          user={user}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          onLogout={() => {
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            setUser(null);
+            setIsSidebarOpen(false);
+          }}
+        />
+      )}
+
+
+      <Routes>
+        <Route path="/" element={<Home user={user} />} />
+
+        <Route
+          path="/dashboard"
+          element={user ? <DashBoard user={user} /> : <Login setUser={setUser} />}
+        />
+
+        <Route
+          path="/transactions"
+          element={
+            user ? (
+              <Transactions refreshUser={refreshUser} />
+            ) : (
+              <Login setUser={setUser} />
+            )
+          }
+        />
+
+        <Route
+          path="/transfer"
+          element={user ? <TransferMoney refreshUser={refreshUser} /> : <Login setUser={setUser} />}
+        />
+
+        <Route path="/login" element={<Login setUser={setUser} />} />
+        <Route path="/create-account" element={<CreateAccount />} />
+
+        <Route
+          path="/account/:accountNumber"
+          element={<AccountDetails user={user} />}
+        />
+      </Routes>
+
+
     </BrowserRouter>
   );
 }

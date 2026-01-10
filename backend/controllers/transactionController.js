@@ -176,25 +176,31 @@ export const transferMoney = async (req, res) => {
         await receiver.save({ session });
 
         // 🧾 Transactions
-        await Transaction.create(
+        await transaction.create(
             [
                 {
                     account: sender._id,
                     type: "debit",
                     amount,
+                    balanceAfter: sender.balance,
                     description: "Money transferred",
                     relatedAccount: receiver.accountNumber,
-                },
-                {
-                    account: receiver._id,
-                    type: "credit",
-                    amount,
-                    description: "Money received",
-                    relatedAccount: sender.accountNumber,
-                },
+
+                }
+
             ],
             { session }
         );
+        await transaction.create([{
+            account: receiver._id,
+            type: "credit",
+            amount,
+            balanceAfter: receiver.balance,
+            description: "Money received",
+            relatedAccount: sender.accountNumber,
+
+        }], { session });
+
 
         await session.commitTransaction();
         session.endSession();
@@ -212,6 +218,28 @@ export const transferMoney = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Transfer failed",
+        });
+    }
+};
+
+// controllers/transactionController.js
+export const getTransferHistory = async (req, res) => {
+    try {
+        const transactions = await transaction.find({
+            account: req.user.id,
+            description: { $in: ["Money transferred", "Money received"] }
+        }).sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            transactions
+        });
+
+    } catch (error) {
+        console.error("Transfer history error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch transfer history"
         });
     }
 };

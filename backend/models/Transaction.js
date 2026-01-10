@@ -36,6 +36,7 @@ const transactionSchema = new mongoose.Schema(
             default: "success",
         },
         relatedAccount: String,
+        treansferMoneyList: [],
     },
     {
         timestamps: true, // adds createdAt & updatedAt
