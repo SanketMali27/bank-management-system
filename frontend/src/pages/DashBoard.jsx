@@ -9,10 +9,16 @@ import {
     Eye,
     EyeOff
 } from "lucide-react";
+import { useEffect } from "react";
 import { useState } from "react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 function Dashboard({ user }) {
     const [showBalance, setShowBalance] = useState(true);
+    const navigate = useNavigate();
+    useEffect(() => {
+
+    })
     return (
         <div className="space-y-10">
 
@@ -78,11 +84,13 @@ function Dashboard({ user }) {
                         title="UPI Transfer"
                         icon={<Send />}
                         color="from-indigo-500 to-blue-600"
+
                     />
                     <ActionCard
                         title="Net Banking"
                         icon={<CreditCard />}
                         color="from-purple-500 to-fuchsia-600"
+                        onClick={() => navigate("/transfer")}
                     />
                     <ActionCard
                         title="Transactions"
@@ -139,29 +147,20 @@ function Dashboard({ user }) {
 
 /* ===== REUSABLE COMPONENTS ===== */
 
-function ActionCard({ title, icon, color }) {
+function ActionCard({ title, icon, color, onClick }) {
     return (
         <div
-            className={`
-                group relative overflow-hidden rounded-2xl
-                bg-gradient-to-br ${color}
-                p-5 text-white shadow-lg
-                transition-all duration-300
-                hover:-translate-y-1 hover:shadow-2xl
-                cursor-pointer
-            `}
+            onClick={onClick}
+            className={`cursor-pointer p-6 rounded-xl text-white bg-gradient-to-r ${color} 
+                  hover:scale-105 transition transform`}
         >
-            <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition" />
-
-            <div className="relative flex flex-col items-center gap-3">
-                <div className="rounded-full bg-white/20 p-3">
-                    {icon}
-                </div>
-                <span className="font-semibold">{title}</span>
-            </div>
+            <div className="text-3xl mb-3">{icon}</div>
+            <h3 className="text-lg font-semibold">{title}</h3>
         </div>
     );
 }
+
+export default ActionCard;
 
 function InfoCard({ title, desc, icon }) {
     return (

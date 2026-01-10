@@ -1,23 +1,22 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate, useNavigate } from "react-router-dom";
 
 function AccountDetails({ user }) {
-    const { accountNumber } = user ? { accountNumber: user.accountNumber } : useParams();
+    // ✅ ALL hooks at top (no conditions)
+    const { accountNumber } = useParams(); // even if unused, safe
     const [account, setAccount] = useState(null);
     const [error, setError] = useState("");
-
-    if (!user) {
-        return (
-            <p className="text-center mt-20 text-red-600">
-                Please login to view account details
-            </p>
-        );
-    }
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchAccount = async () => {
             try {
                 const token = localStorage.getItem("token");
+
+                if (!token) {
+                    navigate("/login");
+                    return;
+                }
 
                 const res = await fetch(
                     "http://localhost:5000/api/account/me",
@@ -29,7 +28,6 @@ function AccountDetails({ user }) {
                     }
                 );
 
-                // 🔴 Handle token expiry / unauthorized
                 if (res.status === 401) {
                     localStorage.removeItem("token");
                     localStorage.removeItem("user");
@@ -41,6 +39,7 @@ function AccountDetails({ user }) {
 
                 if (data.success) {
                     setAccount(data.account);
+                    console.log("Fetched account:", data.account);
                 } else {
                     setError(data.message);
                 }
@@ -50,7 +49,12 @@ function AccountDetails({ user }) {
         };
 
         fetchAccount();
-    }, []); // ✅ no dependency needed
+    }, [navigate]);
+
+    // ✅ Conditional rendering AFTER hooks
+    if (!user) {
+        return <Navigate to="/login" />;
+    }
 
     if (error) {
         return <p className="text-red-600 text-center mt-10">{error}</p>;

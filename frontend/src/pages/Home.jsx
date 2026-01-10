@@ -13,7 +13,18 @@ function Home({ user }) {
                     Go to Dashboard
                 </button>
             ) : (
-                <p>Please login to continue</p>
+                <div className="text-center">
+                    <p>Please login to continue</p>
+
+
+                    <button
+                        onClick={() => navigate("/dashboard")}
+                        className="bg-blue-600 text-white px-6 py-3 rounded"
+                    >
+                        login
+                    </button>
+                </div>
+
             )}
         </div>
     );

@@ -20,6 +20,7 @@ function Transactions() {
             const data = await res.json();
             if (data.success) {
                 setTransactions(data.transactions);
+
             } else {
                 setError(data.message);
             }
@@ -55,6 +56,8 @@ function Transactions() {
             const data = await res.json();
             if (data.success) {
                 setAmount("");
+
+
                 fetchTransactions();
             } else {
                 setError(data.message);
@@ -136,6 +139,7 @@ function Transactions() {
             {/* ===== TRANSACTION HISTORY ===== */}
             <div className="bg-white p-6 rounded-xl shadow">
                 <h2 className="text-lg font-semibold mb-4">Transaction History</h2>
+                {error && <p className="text-red-600 mt-3">{error}</p>}
 
                 {transactions.length === 0 ? (
                     <p className="text-gray-500">No transactions found.</p>
@@ -172,8 +176,6 @@ function Transactions() {
                         ))}
                     </div>
                 )}
-
-                {error && <p className="text-red-600 mt-3">{error}</p>}
             </div>
         </div>
     );

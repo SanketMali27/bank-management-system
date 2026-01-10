@@ -117,7 +117,7 @@ export const loginAccount = async (req, res) => {
 
 export const getAccountByNumber = async (req, res) => {
     try {
-        const account = await Account.findById(req.userId);
+        const account = await Account.findById(req.user.id);
 
         if (!account) {
             return res.status(404).json({

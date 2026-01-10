@@ -35,6 +35,7 @@ const transactionSchema = new mongoose.Schema(
             enum: ["success", "failed"],
             default: "success",
         },
+        relatedAccount: String,
     },
     {
         timestamps: true, // adds createdAt & updatedAt

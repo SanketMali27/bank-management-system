@@ -8,7 +8,7 @@ import DashBoard from "./pages/DashBoard";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Transactions from "./components/Transaction";
-
+import TransferMoney from "./pages/transfer";
 function App() {
 
   const [user, setUser] = useState(null);
@@ -17,7 +17,12 @@ function App() {
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (error) {
+        console.error("Failed to parse user data:", error);
+        localStorage.removeItem("user");
+      }
     }
   }, []);
 
@@ -68,6 +73,8 @@ function App() {
               path="/account/:accountNumber"
               element={<AccountDetails user={user} />}
             />
+          </Routes>
+          <Routes path="/transfer" element={<TransferMoney />} >
           </Routes>
         </main>
       </div>

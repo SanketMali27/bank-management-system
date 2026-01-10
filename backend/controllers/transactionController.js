@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import transaction from '../models/Transaction.js';
 import Account from '../models/Accounts.js';
 
@@ -82,7 +83,7 @@ export const withdrawMoney = async (req, res) => {
         await account.save();
 
         // Create transaction
-        const transaction = await Transaction.create({
+        const newTransaction = await transaction.create({
             account: account._id,
             type: "debit",
             amount,
@@ -93,14 +94,14 @@ export const withdrawMoney = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Amount withdrawn successfully",
-            transaction,
+            transaction: newTransaction,
             balance: account.balance,
         });
     } catch (error) {
         console.error("Withdraw error:", error);
         res.status(500).json({
             success: false,
-            message: "Server error",
+            message: " WITHDRAW  Server error",
         });
     }
 };
@@ -127,7 +128,90 @@ export const getTransactionHistory = async (req, res) => {
         console.error("Transaction history error:", error);
         res.status(500).json({
             success: false,
-            message: "Server error",
+            message: " WITHDRAW  Server error",
+        });
+    }
+};
+
+
+export const transferMoney = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const senderId = req.user.id;
+        const { receiverAccountNumber, amount } = req.body;
+
+        if (!receiverAccountNumber || !amount || amount <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Receiver account and valid amount required",
+            });
+        }
+
+        const sender = await Account.findById(senderId).session(session);
+        const receiver = await Account.findOne({
+            accountNumber: receiverAccountNumber,
+        }).session(session);
+
+        if (!receiver) {
+            return res.status(404).json({
+                success: false,
+                message: "Receiver account not found",
+            });
+        }
+
+        if (sender.balance < amount) {
+            return res.status(400).json({
+                success: false,
+                message: "Insufficient balance",
+            });
+        }
+
+        // 💰 Update balances
+        sender.balance -= amount;
+        receiver.balance += amount;
+
+        await sender.save({ session });
+        await receiver.save({ session });
+
+        // 🧾 Transactions
+        await Transaction.create(
+            [
+                {
+                    account: sender._id,
+                    type: "debit",
+                    amount,
+                    description: "Money transferred",
+                    relatedAccount: receiver.accountNumber,
+                },
+                {
+                    account: receiver._id,
+                    type: "credit",
+                    amount,
+                    description: "Money received",
+                    relatedAccount: sender.accountNumber,
+                },
+            ],
+            { session }
+        );
+
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(200).json({
+            success: true,
+            message: "Transfer successful",
+            balance: sender.balance,
+        });
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        console.error("Transfer error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Transfer failed",
         });
     }
 };

@@ -60,6 +60,7 @@ function Sidebar({ user, isOpen, onClose, onLogout }) {
                         icon={<Building2 size={18} />}
                         label="Account Details"
                         onClick={() => {
+                            console.log("Navigating to account:", user.accountNumber);
                             navigate(`/account/${user.accountNumber}`);
                             onClose();
                         }}
