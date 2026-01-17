@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Login({ setUser }) {
+function Login({ setUser, user }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
 
+    if (user) {
+        navigate("/dashboard");
+        return null;
+    }
     const handleLogin = async (e) => {
         e.preventDefault();
 

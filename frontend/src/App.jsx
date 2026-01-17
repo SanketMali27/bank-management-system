@@ -9,6 +9,11 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Transactions from "./components/Transaction";
 import TransferMoney from "./pages/transfer";
+import Investments from "./pages/Investments";
+import Gold from "./pages/invest/Gold";
+import Stocks from "./pages/invest/Stocks";
+import StockDetail from "./pages/invest/StockDetail";
+
 function App() {
 
   const [user, setUser] = useState(null);
@@ -79,6 +84,19 @@ function App() {
         />
 
         <Route
+          path="/investments"
+          element={user ? <Investments user={user} /> : <Login setUser={setUser} />}
+        />
+        <Route
+          path="/investments/gold"
+          element={user ? <Gold user={user} /> : <Login setUser={setUser} />}
+        />
+        <Route
+          path="/investments/stocks"
+          element={user ? <Stocks user={user} /> : <Login setUser={setUser} />}
+        />
+        <Route path="/investments/stocks/:stockId" element={<StockDetail />} />
+        <Route
           path="/transactions"
           element={
             user ? (
@@ -94,7 +112,7 @@ function App() {
           element={user ? <TransferMoney refreshUser={refreshUser} /> : <Login setUser={setUser} />}
         />
 
-        <Route path="/login" element={<Login setUser={setUser} />} />
+        <Route path="/login" element={<Login setUser={setUser} user={user} />} />
         <Route path="/create-account" element={<CreateAccount />} />
 
         <Route

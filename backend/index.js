@@ -4,7 +4,7 @@ import connectDB from "./config/db.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import transactionRoutes from "./routes/transactionRoutes.js";
-
+import investmentRoutes from "./routes/investmentRoutes.js";
 
 const app = express();
 app.use(
@@ -31,6 +31,8 @@ app.use((req, res, next) => {
 app.get("/", (req, res) => {
     res.send("Root working");
 });
+
+app.use("/api/investments", investmentRoutes);
 
 app.use("/api", accountroutes);
 app.use("/api/transactions", transactionRoutes);

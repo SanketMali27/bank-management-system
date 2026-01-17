@@ -8,7 +8,7 @@ import {
 
 /* ================= TRANSFER PAGE ================= */
 
-function Transfer() {
+function Transfer({ refreshUser }) {
     const [receiverAccount, setReceiverAccount] = useState("");
     const [amount, setAmount] = useState("");
     const [refreshKey, setRefreshKey] = useState(0);
@@ -34,15 +34,17 @@ function Transfer() {
             );
 
             const data = await res.json();
-
+            console.log("transfer Money:", data);
             if (data.success) {
                 setReceiverAccount("");
                 setAmount("");
+                await refreshUser();
                 setRefreshKey(prev => prev + 1);
             } else {
                 alert(data.message);
             }
-        } catch {
+        } catch (error) {
+            console.error("Transfer failed:", error);
             alert("Transfer failed");
         }
     };

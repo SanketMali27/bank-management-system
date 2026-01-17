@@ -13,6 +13,10 @@ import { useEffect } from "react";
 import { useState } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Investments from "./Investments";
+
+
+
 function Dashboard({ user }) {
     const [showBalance, setShowBalance] = useState(true);
     const navigate = useNavigate();
@@ -96,6 +100,7 @@ function Dashboard({ user }) {
                         title="Transactions"
                         icon={<Activity />}
                         color="from-orange-500 to-red-500"
+                        onClick={() => navigate("/transactions")}
                     />
                     <ActionCard
                         title="Pay Bills"
@@ -132,12 +137,9 @@ function Dashboard({ user }) {
 
             {/* ===== INVESTMENTS ===== */}
             <section>
-                <h3 className="text-xl font-bold mb-5">
-                    Investments
-                </h3>
 
-                <div className="rounded-2xl bg-gradient-to-r from-gray-100 to-gray-200 p-8 text-gray-700 shadow-inner">
-                    🚧 Stock market & Mutual Fund investments coming soon.
+                <div className="mt-10">
+                    <Investments />
                 </div>
             </section>
 

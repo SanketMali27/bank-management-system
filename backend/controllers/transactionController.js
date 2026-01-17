@@ -143,6 +143,8 @@ export const transferMoney = async (req, res) => {
         const { receiverAccountNumber, amount } = req.body;
 
         if (!receiverAccountNumber || !amount || amount <= 0) {
+            await session.abortTransaction();
+            session.endSession();
             return res.status(400).json({
                 success: false,
                 message: "Receiver account and valid amount required",
@@ -155,13 +157,26 @@ export const transferMoney = async (req, res) => {
         }).session(session);
 
         if (!receiver) {
+            await session.abortTransaction();
+            session.endSession();
             return res.status(404).json({
                 success: false,
                 message: "Receiver account not found",
             });
         }
 
+        if (sender.accountNumber === receiverAccountNumber) {
+            await session.abortTransaction();
+            session.endSession();
+            return res.status(400).json({
+                success: false,
+                message: "Cannot transfer to same account",
+            });
+        }
+
         if (sender.balance < amount) {
+            await session.abortTransaction();
+            session.endSession();
             return res.status(400).json({
                 success: false,
                 message: "Insufficient balance",
@@ -175,7 +190,7 @@ export const transferMoney = async (req, res) => {
         await sender.save({ session });
         await receiver.save({ session });
 
-        // 🧾 Transactions
+        // 🧾 Sender transaction
         await transaction.create(
             [
                 {
@@ -185,22 +200,25 @@ export const transferMoney = async (req, res) => {
                     balanceAfter: sender.balance,
                     description: "Money transferred",
                     relatedAccount: receiver.accountNumber,
-
-                }
-
+                },
             ],
-            { session }
+            { session, ordered: true }
         );
-        await transaction.create([{
-            account: receiver._id,
-            type: "credit",
-            amount,
-            balanceAfter: receiver.balance,
-            description: "Money received",
-            relatedAccount: sender.accountNumber,
 
-        }], { session });
-
+        // 🧾 Receiver transaction
+        await transaction.create(
+            [
+                {
+                    account: receiver._id,
+                    type: "credit",
+                    amount,
+                    balanceAfter: receiver.balance,
+                    description: "Money received",
+                    relatedAccount: sender.accountNumber,
+                },
+            ],
+            { session, ordered: true }
+        );
 
         await session.commitTransaction();
         session.endSession();
@@ -208,7 +226,7 @@ export const transferMoney = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Transfer successful",
-            balance: sender.balance,
+            account: sender,
         });
     } catch (error) {
         await session.abortTransaction();
@@ -221,6 +239,7 @@ export const transferMoney = async (req, res) => {
         });
     }
 };
+
 
 // controllers/transactionController.js
 export const getTransferHistory = async (req, res) => {
